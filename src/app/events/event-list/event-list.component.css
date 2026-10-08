@@ -1,0 +1,138 @@
+.catalog {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.catalog__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.catalog__eyebrow {
+  margin: 0 0 6px;
+  color: #4f46e5;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.catalog__title {
+  margin: 0;
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  color: #0f172a;
+}
+
+.catalog__subtitle {
+  margin: 8px 0 0;
+  color: #5b6478;
+  font-size: 0.95rem;
+}
+
+.catalog__search {
+  min-width: min(340px, 100%);
+  padding: 12px 16px;
+  border: 1px solid #dfe3ec;
+  border-radius: 12px;
+  background: #ffffff;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.catalog__search:focus {
+  border-color: #4f46e5;
+  outline: 2px solid rgba(79, 70, 229, 0.18);
+}
+
+/* Grade responsiva de cards */
+.catalog__grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.catalog__status {
+  margin: 18px 0 0;
+  text-align: center;
+  color: #5b6478;
+  font-size: 0.9rem;
+}
+
+/* Feedback (erro / vazio) */
+.catalog__feedback {
+  padding: 48px 24px;
+  border: 1px dashed #d8dce7;
+  border-radius: 16px;
+  background: #fbfcff;
+  text-align: center;
+}
+
+.catalog__feedback-title {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #0f172a;
+}
+
+.catalog__feedback-text {
+  margin: 8px 0 20px;
+  color: #5b6478;
+}
+
+.catalog__retry {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.catalog__retry:hover {
+  background: #4338ca;
+}
+
+/* Skeleton de carregamento */
+.skeleton {
+  padding: 0 0 16px;
+  border: 1px solid #e6e8ef;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.skeleton__media {
+  aspect-ratio: 16 / 9;
+  background: #eceff5;
+}
+
+.skeleton__line {
+  height: 12px;
+  margin: 14px 16px 0;
+  border-radius: 6px;
+  background: #eceff5;
+}
+
+.skeleton__line--short {
+  width: 55%;
+}
+
+@media (max-width: 560px) {
+  .catalog {
+    padding: 24px 14px 48px;
+  }
+
+  .catalog__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog__search {
+    width: 100%;
+  }
+}

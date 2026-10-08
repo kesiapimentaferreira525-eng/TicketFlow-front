@@ -1,0 +1,34 @@
+<section class="purchase-result">
+  @if (loading) {
+    <div class="purchase-result__card" aria-live="polite">Consultando o status da compra...</div>
+  } @else if (error) {
+    <div class="purchase-result__card" role="alert">
+      <h1>Não foi possível consultar o pedido</h1>
+      <p>{{ error }}</p>
+      <a routerLink="/">Voltar aos eventos</a>
+    </div>
+  } @else if (purchase) {
+    <article class="purchase-result__card">
+      <div class="purchase-result__icon" [class.purchase-result__icon--approved]="purchase.status === 'approved'">
+        {{ purchase.status === 'approved' ? '✓' : '•' }}
+      </div>
+      <p class="purchase-result__eyebrow">Pedido #{{ purchase.id }}</p>
+      <h1>{{ statusTitle }}</h1>
+      <p class="purchase-result__message">{{ statusMessage }}</p>
+
+      <dl class="purchase-result__summary">
+        <div><dt>Evento</dt><dd>{{ purchase.eventTitle }}</dd></div>
+        <div><dt>Ingressos</dt><dd>{{ purchase.quantity }}</dd></div>
+        <div><dt>Forma de pagamento</dt><dd>{{ paymentMethodLabel }}</dd></div>
+        <div class="purchase-result__total"><dt>Total</dt><dd>{{ total }}</dd></div>
+      </dl>
+
+      @if (purchase.status === 'pending') {
+        <button class="purchase-result__refresh" type="button" (click)="loadPurchase()">
+          Atualizar status
+        </button>
+      }
+      <a class="purchase-result__catalog" routerLink="/">Voltar aos eventos</a>
+    </article>
+  }
+</section>

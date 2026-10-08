@@ -1,0 +1,66 @@
+<section class="catalog">
+  <header class="catalog__header">
+    <div>
+      <p class="catalog__eyebrow">Plataforma de ingressos</p>
+      <h1 class="catalog__title">Eventos disponíveis</h1>
+      <p class="catalog__subtitle">Escolha um evento para ver os detalhes e garantir seu ingresso.</p>
+    </div>
+
+    <input
+      class="catalog__search"
+      type="search"
+      name="search"
+      [(ngModel)]="searchTerm"
+      placeholder="Buscar por nome, local ou categoria"
+      aria-label="Buscar eventos"
+    />
+  </header>
+
+  <!-- Estado de carregamento -->
+  @if (loading) {
+    <div class="catalog__grid" aria-busy="true" aria-live="polite">
+      @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
+        <div class="skeleton">
+          <div class="skeleton__media"></div>
+          <div class="skeleton__line"></div>
+          <div class="skeleton__line skeleton__line--short"></div>
+        </div>
+      }
+    </div>
+    <p class="catalog__status">Carregando eventos…</p>
+  }
+
+  <!-- Estado de erro amigável -->
+  @else if (error) {
+    <div class="catalog__feedback" role="alert">
+      <h2 class="catalog__feedback-title">Não foi possível carregar os eventos</h2>
+      <p class="catalog__feedback-text">{{ error }}</p>
+      <button class="catalog__retry" type="button" (click)="loadEvents()">Tentar novamente</button>
+    </div>
+  }
+
+  <!-- Lista vazia -->
+  @else if (filteredEvents.length === 0) {
+    <div class="catalog__feedback">
+      <h2 class="catalog__feedback-title">
+        {{ events.length === 0 ? 'Nenhum evento disponível no momento' : 'Nenhum evento encontrado' }}
+      </h2>
+      <p class="catalog__feedback-text">
+        {{
+          events.length === 0
+            ? 'Volte em breve — novos eventos são publicados toda semana.'
+            : 'Tente buscar por outro nome, local ou categoria.'
+        }}
+      </p>
+    </div>
+  }
+
+  <!-- Grade de cards -->
+  @else {
+    <div class="catalog__grid">
+      @for (event of filteredEvents; track event.id) {
+        <app-event-card [event]="event" (selected)="goToDetails($event)"></app-event-card>
+      }
+    </div>
+  }
+</section>

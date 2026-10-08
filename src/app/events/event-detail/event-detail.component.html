@@ -1,0 +1,179 @@
+<section class="detail">
+  <button class="detail__back" type="button" (click)="goBack()">← Voltar</button>
+
+  <!-- Carregando -->
+  @if (loading) {
+    <div class="detail__skeleton" aria-busy="true" aria-live="polite">
+      <div class="detail__skeleton-media"></div>
+      <div class="detail__skeleton-lines">
+        <div class="detail__skeleton-line"></div>
+        <div class="detail__skeleton-line detail__skeleton-line--short"></div>
+        <div class="detail__skeleton-line"></div>
+      </div>
+    </div>
+    <p class="detail__status">Carregando detalhes do evento…</p>
+  }
+
+  <!-- Erro / não encontrado -->
+  @else if (error) {
+    <div class="detail__feedback" role="alert">
+      <h1 class="detail__feedback-title">{{ notFound ? 'Evento não encontrado' : 'Erro ao carregar' }}</h1>
+      <p class="detail__feedback-text">{{ error }}</p>
+      <div class="detail__feedback-actions">
+        <button class="detail__button" type="button" (click)="goToCatalog()">Ver todos os eventos</button>
+      </div>
+    </div>
+  }
+
+  <!-- Detalhes completos -->
+  @else if (event) {
+    <article class="detail__card">
+      <div class="detail__media">
+        @if (event.imageUrl) {
+          <img [src]="event.imageUrl" [alt]="event.title" />
+        } @else {
+          <div class="detail__placeholder" aria-hidden="true">Sem imagem</div>
+        }
+      </div>
+
+      <div class="detail__content">
+        @if (event.category) {
+          <span class="detail__tag">{{ event.category }}</span>
+        }
+
+        <h1 class="detail__title">{{ event.title }}</h1>
+
+        <ul class="detail__facts">
+          <li>
+            <span class="detail__fact-label">Data</span>
+            <span class="detail__fact-value">{{ formattedDate }}</span>
+          </li>
+          <li>
+            <span class="detail__fact-label">Local</span>
+            <span class="detail__fact-value">{{ event.location }}</span>
+          </li>
+          <li>
+            <span class="detail__fact-label">Ingresso</span>
+            <span class="detail__fact-value">{{ formattedPrice }}</span>
+          </li>
+          @if (event.capacity) {
+            <li>
+              <span class="detail__fact-label">Capacidade</span>
+              <span class="detail__fact-value">{{ event.capacity }} lugares</span>
+            </li>
+          }
+          @if (event.availableTickets !== undefined && event.availableTickets !== null) {
+            <li>
+              <span class="detail__fact-label">Disponíveis</span>
+              <span class="detail__fact-value">{{ event.availableTickets }} ingressos</span>
+            </li>
+          }
+        </ul>
+
+        <h2 class="detail__section-title">Sobre o evento</h2>
+        <p class="detail__description">
+          {{ event.description || 'A organização ainda não publicou a descrição deste evento.' }}
+        </p>
+
+        <button
+          class="detail__cta"
+          type="button"
+          [attr.aria-expanded]="purchaseOpen"
+          [disabled]="!canPurchase"
+          (click)="openPurchase()"
+        >
+          {{ !canPurchase ? 'Compra indisponível para este evento' : purchaseOpen ? 'Fechar compra' : 'Comprar ingresso' }}
+        </button>
+
+        @if (purchaseOpen) {
+          <form class="checkout" #purchaseForm="ngForm" (ngSubmit)="submitPurchase(purchaseForm)">
+            <h2 class="detail__section-title">Finalizar compra</h2>
+            <p class="checkout__intro">Informe seus dados para reservar os ingressos.</p>
+
+            <div class="checkout__grid">
+              <label class="checkout__field checkout__field--full">
+                Nome completo
+                <input name="customerName" type="text" autocomplete="name" required ngModel />
+              </label>
+
+              <label class="checkout__field">
+                E-mail
+                <input name="email" type="email" autocomplete="email" required ngModel />
+              </label>
+
+              <label class="checkout__field">
+                CPF
+                <input
+                  name="cpf"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  placeholder="000.000.000-00"
+                  minlength="11"
+                  maxlength="14"
+                  required
+                  ngModel
+                />
+              </label>
+
+              <label class="checkout__field">
+                Telefone
+                <input name="phone" type="tel" autocomplete="tel" required ngModel />
+              </label>
+
+              <label class="checkout__field">
+                Quantidade
+                <input
+                  name="quantity"
+                  type="number"
+                  min="1"
+                  [max]="maxQuantity"
+                  [(ngModel)]="quantity"
+                  required
+                />
+              </label>
+            </div>
+
+            <fieldset class="checkout__payments">
+              <legend>Forma de pagamento</legend>
+              <label class="checkout__payment">
+                <input type="radio" name="paymentMethod" value="pix" [(ngModel)]="paymentMethod" required />
+                <span><strong>Pix</strong><small>Pagamento instantâneo</small></span>
+              </label>
+              <label class="checkout__payment">
+                <input type="radio" name="paymentMethod" value="credit-card" [(ngModel)]="paymentMethod" />
+                <span><strong>Cartão de crédito</strong><small>Pagamento aguardará integração</small></span>
+              </label>
+              <label class="checkout__payment">
+                <input type="radio" name="paymentMethod" value="boleto" [(ngModel)]="paymentMethod" />
+                <span><strong>Boleto bancário</strong><small>Vencimento conforme disponibilidade</small></span>
+              </label>
+            </fieldset>
+
+            <div class="checkout__summary">
+              <span>Total dos ingressos</span>
+              <strong>{{ purchaseTotal }}</strong>
+            </div>
+
+            @if (purchaseFeedback) {
+              <p class="checkout__feedback" role="status">{{ purchaseFeedback }}</p>
+            }
+
+            @if (checkoutUrl) {
+              <a class="checkout__provider-link" [href]="checkoutUrl" target="_blank" rel="noopener noreferrer">
+                Pagar com Mercado Pago
+              </a>
+            }
+
+            <button class="detail__cta" type="submit" [disabled]="purchaseLoading || purchaseCompleted">
+              {{ purchaseLoading ? 'Enviando pedido...' : purchaseCompleted ? 'Pedido criado' : 'Continuar' }}
+            </button>
+            <p class="checkout__notice">
+              O pagamento é realizado no ambiente seguro do Mercado Pago. A disponibilidade dos métodos pode variar.
+            </p>
+          </form>
+        }
+      </div>
+    </article>
+  }
+</section>
